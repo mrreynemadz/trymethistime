@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Punk Birthday Card — Blow Candles</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rock+Salt&family=Inter:wght@300;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070707;
+    --accent:#D61355; /* neon pink */
+    --accent-2:#FCE22A; /* neon yellow */
+    --muted:#bdbdbd;
+    --card:#111;
+  }
+
+  /* Page layout */
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    min-height:100%;
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg,var(--bg) 0%, #0e0e10 100%);
+    color:var(--accent-2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+
+  /* Card */
+  .card{
+    width:100%;
+    max-width:420px;
+    background:linear-gradient(180deg,#0f0f10 0%, #151516 100%);
+    border:3px solid rgba(214,19,85,0.18);
+    border-radius:18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    padding:20px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+
+  /* Punk header */
+  .title{
+    font-family: "Rock Salt", cursive;
+    color:var(--accent);
+    font-size:clamp(1.1rem, 4.5vw, 1.9rem);
+    margin:6px 0 4px;
+    letter-spacing:0.02em;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.6);
+  }
+  .subtitle{
+    font-family: 'Press Start 2P', monospace;
+    font-size:clamp(.55rem, 2.6vw, .9rem);
+    color:var(--muted);
+    margin:0 0 18px;
+  }
+
+  /* Cake container - centered below text */
+  .center{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:14px;
+  }
+
+  /* Cake visual built with CSS */
+  .cake-wrap{
+    width:80%;
+    max-width:320px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+  }
+  .plate{
+    width:100%;
+    height:18px;
+    background:linear-gradient(90deg,#1b1b1b,#2a2a2a);
+    border-radius:10px;
+    box-shadow: 0 6px 8px rgba(0,0,0,0.6);
+    margin-top:12px;
+  }
+  .cake{
+    width:100%;
+    max-width:300px;
+    height:130px;
+    background:linear-gradient(180deg,#2b2b2b,#181818);
+    border-radius:14px 14px 8px 8px;
+    border:3px solid rgba(214,19,85,0.22);
+    position:relative;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding-top:30px;
+    box-shadow: inset 0 -6px 0 rgba(0,0,0,0.4);
+  }
+  .icing{
+    position:absolute;
+    top:14px;
+    left:12px;
+    right:12px;
+    height:48px;
+    background:linear-gradient(90deg,var(--accent),#FF7A8A);
+    border-radius:12px;
+    clip-path: ellipse(85% 60% at 50% 40%);
+    box-shadow: 0 6px 8px rgba(214,19,85,0.12);
+  }
+
+  /* Candles - touch friendly */
+  .candles{
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    padding:0 22px;
+    position:relative;
+    z-index:2;
+  }
+  .candle{
+    width:34px;               /* larger touch target */
+    height:78px;
+    background:#fff;
+    border-radius:6px;
+    border:3px solid var(--accent);
+    position:relative;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    box-shadow:0 6px 10px rgba(0,0,0,0.5);
+    cursor:pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform .12s ease;
+    touch-action: manipulation;
+  }
+  .candle:active{ transform: translateY(3px) scale(.99); }
+  .candle .stripe{
+    position:absolute;
+    top:14px;
+    left:6px; right:6px;
+    height:8px;
+    background:linear-gradient(90deg, rgba(214,19,85,0.8), rgba(252,226,42,0.8));
+    border-radius:4px;
+  }
+  .flame{
+    width:16px;
+    height:24px;
+    margin-top:-18px;
+    background: radial-gradient(circle at 40% 30%, #fff2 0%, #ffea00 10%, #ff8a00 60%);
+    border-radius:50% 50% 40% 40%;
+    box-shadow:0 4px 10px rgba(255,140,0,0.6);
+    animation: flicker .45s infinite alternate;
+  }
+  @keyframes flicker{
+    from{ transform: translateY(0) scale(1) rotate(0deg); opacity:1; }
+    to{ transform: translateY(-3px) scale(.98) rotate(-2deg); opacity:.9; }
+  }
+
+  /* Count text + hint */
+  .hint{
+    font-size:clamp(.6rem,2.6vw,.9rem);
+    color:var(--muted);
+    margin-top:8px;
+  }
+
+  /* Modal (punk sticker) */
+  .modal-bg{
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background: linear-gradient(0deg, rgba(0,0,0,.6), rgba(0,0,0,.6));
+    z-index:60;
+    padding:16px;
+  }
+  .modal{
+    width:100%;
+    max-width:360px;
+    background: linear-gradient(180deg,#111,#0b0b0b);
+    border:4px solid var(--accent);
+    border-radius:14px;
+    padding:18px;
+    text-align:left;
+    color:#fff;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+    transform: rotate(-2deg);
+    position:relative;
+  }
+  .modal h2{
+    margin:0 0 8px;
+    color:var(--accent-2);
+    font-size:1rem;
+    letter-spacing:.02em;
+  }
+  .modal p{
+    margin:0 0 12px;
+    color:#ddd;
+    font-size:.95rem;
+    line-height:1.3;
+  }
+  .close{
+    display:inline-block;
+    background:var(--accent);
+    color:#111;
+    padding:8px 12px;
+    border-radius:10px;
+    font-weight:600;
+    border:0;
+    cursor:pointer;
+    font-size:.85rem;
+  }
+
+  /* Confetti pieces (CSS fallback small) */
+  .confetti-fallback{ position:absolute; inset:0; pointer-events:none; z-index:50; }
+
+  /* Responsive tweaks */
+  @media (max-width:420px){
+    .cake{ height:120px }
+    .candle{ width:30px; height:70px }
+    .title{ font-size:1.4rem }
+  }
+</style>
+</head>
+<body>
+
+<div class="card" role="main" aria-label="Birthday card">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div style="text-align:left">
+      <div class="title">HAPPY BIRTHDAY</div>
+      <div class="subtitle">to my lovely bebs</div>
+    </div>
+    <!-- small punk badge -->
+    <div style="text-align:right">
+      <div style="font-family:'Press Start 2P'; font-size:.6rem; color:var(--muted);">LIVE • LOUD</div>
+      <div style="font-size:.7rem; color:var(--accent); margin-top:6px;">♥ from me</div>
+    </div>
+  </div>
+
+  <div class="center">
+    <div class="cake-wrap" aria-hidden="false">
+      <div class="cake" role="img" aria-label="birthday cake">
+        <div class="icing"></div>
+
+        <!-- Candles row -->
+        <div class="candles" aria-hidden="false">
+          <button class="candle" data-index="0" aria-label="Candle 1">
+            <span class="flame"></span>
+            <span class="stripe"></span>
+          </button>
+          <button class="candle" data-index="1" aria-label="Candle 2">
+            <span class="flame"></span>
+            <span class="stripe"></span>
+          </button>
+          <button class="candle" data-index="2" aria-label="Candle 3">
+            <span class="flame"></span>
+            <span class="stripe"></span>
+          </button>
+          <button class="candle" data-index="3" aria-label="Candle 4">
+            <span class="flame"></span>
+            <span class="stripe"></span>
+          </button>
+          <button class="candle" data-index="4" aria-label="Candle 5">
+            <span class="flame"></span>
+            <span class="stripe"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="plate" aria-hidden="true"></div>
+    </div>
+
+    <div class="hint">Tap each candle to blow them out • {0} left</div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modalBg" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal" role="document">
+    <h2>🎉 All candles blown! 🎉</h2>
+    <p id="modalMessage">
+      Happy birthday, Baby! Even from far away — you make my world louder and brighter. I always love you.</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="close" id="closeBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- confetti canvas (JS) -->
+<canvas id="confettiCanvas" style="position:fixed;inset:0;pointer-events:none;z-index:40"></canvas>
+
+<script>
+  // Elements
+  const candles = Array.from(document.querySelectorAll('.candle'));
+  const hint = document.querySelector('.hint');
+  const modalBg = document.getElementById('modalBg');
+  const closeBtn = document.getElementById('closeBtn');
+  const modalMessage = document.getElementById('modalMessage');
+
+  // Personalize placeholders (edit these strings)
+  const boyfriendName = "Lovely Bebs";          // ← replace with his name
+  const finalMessage = "Happy birthday, " + boyfriendName + "! Even if we're far apart, you're still my favorite man in the world — I always love you forever. ❤️"; // your message
+
+  modalMessage.textContent = finalMessage;
+
+  // State
+  let total = candles.length;
+  let remaining = total;
+  updateHint();
+
+  // Make candles clickable/tappable
+  candles.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.blown === "true") return;
+      // remove flame (CSS element)
+      const flame = btn.querySelector('.flame');
+      if (flame) {
+        // small fade out
+        flame.style.transition = "transform .25s ease, opacity .25s ease";
+        flame.style.transform = "scale(.2) translateY(-8px)";
+        flame.style.opacity = "0";
+        setTimeout(()=>flame.remove(), 300);
+      }
+      btn.dataset.blown = "true";
+      remaining--;
+      updateHint();
+      // punch animation: small shake of card (subtle)
+      btn.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}], {duration:220, easing:'ease-out'});
+      if (remaining === 0) {
+        // show modal + confetti
+        setTimeout(() => {
+          showModal();
+          launchConfetti();
+        }, 400);
+      }
+    }, {passive:true});
+  });
+
+  function updateHint(){
+    const hintEl = document.querySelector('.hint');
+    hintEl.textContent = `Tap each candle to blow them out • ${remaining} left`;
+  }
+
+  // Modal control
+  function showModal(){
+    modalBg.style.display = "flex";
+    modalBg.setAttribute('aria-hidden','false');
+    // small tv-scan rotate effect for punk vibe
+    const modal = modalBg.querySelector('.modal');
+    modal.animate([{transform:'rotate(-6deg) scale(.98)'},{transform:'rotate(0deg) scale(1)'}],{duration:420,easing:'cubic-bezier(.2,.9,.2,1)'});
+  }
+  closeBtn.addEventListener('click', hideModal);
+  modalBg.addEventListener('click', (e)=> { if(e.target === modalBg) hideModal(); });
+
+  function hideModal(){
+    modalBg.style.display = "none";
+    modalBg.setAttribute('aria-hidden','true');
+  }
+
+  // Confetti canvas (simple and performant)
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  let W = canvas.width = window.innerWidth;
+  let H = canvas.height = window.innerHeight;
+  let pieces = [];
+
+  function Confetti(x,y){
+    this.x = x || Math.random()*W;
+    this.y = y || -10;
+    this.size = 6 + Math.random()*10;
+    this.color = ['#D61355','#FCE22A','#30E3DF','#FFFFFF','#FF7A8A'][Math.floor(Math.random()*5)];
+    this.tilt = Math.random()*10 - 5;
+    this.speedY = 2 + Math.random()*4;
+    this.speedX = Math.random()*6 - 3;
+    this.rotation = Math.random()*360;
+    this.rotationSpeed = Math.random()*8 - 4;
+  }
+  Confetti.prototype.update = function(){
+    this.x += this.speedX;
+    this.y += this.speedY;
+    this.rotation += this.rotationSpeed;
+    if (this.y > H + 20) { this.y = -20; this.x = Math.random()*W; }
+  };
+  Confetti.prototype.draw = function(){
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation * Math.PI/180);
+    ctx.fillStyle = this.color;
+    ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size*0.6);
+    ctx.restore();
+  };
+
+  function launchConfetti(count=120){
+    pieces = [];
+    for (let i=0;i<count;i++){
+      pieces.push(new Confetti(Math.random()*W, Math.random()*H - H));
+    }
+    renderConfetti();
+    // stop after 5s
+    setTimeout(()=> pieces = [], 5200);
+  }
+
+  let raf;
+  function renderConfetti(){
+    ctx.clearRect(0,0,W,H);
+    for (let p of pieces){
+      p.update();
+      p.draw();
+    }
+    raf = requestAnimationFrame(renderConfetti);
+    // if no pieces, cancel to save CPU
+    if (pieces.length === 0){ cancelAnimationFrame(raf); ctx.clearRect(0,0,W,H); }
+  }
+
+  // Resize
+  window.addEventListener('resize', ()=>{
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  });
+</script>
+</body>
+</html>
